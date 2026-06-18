@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{common.view}">Employee Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0" th:text="#{common.view}">Employee Card</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th scope="row" class="text-muted" style="width: 40%;" th:text="#{employee.name} + ':'">Name:</th>
+                            <td th:text="${employee.name}" class="fw-bold"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-muted" th:text="#{employee.email} + ':'">Email:</th>
+                            <td th:text="${employee.email}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-muted" th:text="#{employee.phone} + ':'">Phone:</th>
+                            <td th:text="${employee.phone != null ? employee.phone : '-'}"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-muted" th:text="#{employee.birthDate} + ':'">Birth Date:</th>
+                            <td th:text="${employee.birthDate != null ? #temporals.format(employee.birthDate, 'dd MMMM yyyy') : '-'}"></td>
+                        </tr>
+                    </table>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a th:href="@{/employees}" class="btn btn-secondary" th:text="#{common.back}">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

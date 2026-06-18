@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{nav.clients}">Clients List</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .lang-switcher { text-align: right; margin-bottom: 20px; }
+        .lang-switcher a { text-decoration: none; color: #007bff; margin-left: 10px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #28a745; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .btn { display: inline-block; padding: 6px 12px; color: white; background: #007bff; text-decoration: none; border-radius: 4px; font-size: 14px; border: none; }
+        .btn-edit { background: #ffc107; color: #212529; margin-left: 5px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="lang-switcher">
+        <a th:href="@{/clients(lang='en')}">EN</a> | <a th:href="@{/clients(lang='uk')}">UA</a>
+    </div>
+
+    <h2 th:text="#{nav.clients}">Manage Clients</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th th:text="#{client.name}">Name</th>
+            <th th:text="#{client.email}">Email</th>
+            <th th:text="#{common.actions}">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="client : ${clients}">
+            <td th:text="${client.name}">Client Name</td>
+            <td th:text="${client.email}">email@example.com</td>
+            <td>
+                <a th:href="@{/clients/view/{email}(email=${client.email})}" class="btn" th:text="#{common.view}">View</a>
+                <a th:href="@{/clients/edit/{email}(email=${client.email})}" class="btn btn-edit" th:text="#{common.edit}">Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/}" class="back-link">← <span th:text="#{nav.home}">Back to Home</span></a>
+</div>
+</body>
+</html>

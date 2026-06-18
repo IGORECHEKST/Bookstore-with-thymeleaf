@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{book.view.title}">Book Details</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .book-title { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .info-group { margin-bottom: 12px; font-size: 16px; }
+        .info-label { font-weight: bold; color: #555; }
+        .description { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; margin-top: 15px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="book-title" th:text="${book.name}">Book Name</h2>
+
+    <div class="info-group">
+        <span class="info-label" th:text="#{book.author} + ':'">Author:</span> <span th:text="${book.author}"></span>
+    </div>
+    <div class="info-group">
+        <span class="info-label" th:text="#{book.genre} + ':'">Genre:</span> <span th:text="${book.genre}"></span>
+    </div>
+    <div class="info-group">
+        <span class="info-label" th:text="#{book.language} + ':'">Language:</span> <span th:text="${book.language}"></span>
+    </div>
+    <div class="info-group">
+        <span class="info-label" th:text="#{book.price} + ':'">Price:</span> <span style="color: #28a745; font-weight: bold;" th:text="${book.price} + ' грн'"></span>
+    </div>
+
+    <div class="description">
+        <span class="info-label" th:text="#{book.description} + ':'">Description:</span>
+        <p th:text="${book.description}">Description content...</p>
+    </div>
+
+    <a th:href="@{/books}" class="back-link">← <span th:text="#{common.back}">Back</span></a>
+</div>
+</body>
+</html>

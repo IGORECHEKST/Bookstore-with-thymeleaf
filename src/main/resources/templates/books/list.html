@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{book.list.title}">Available Books</title>
+    <!-- Подключаем Bootstrap для красивой пагинации и кнопок -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f8f9fa; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .lang-switcher a { text-decoration: none; font-weight: bold; color: #0d6efd; }
+        table thead { background-color: #0d6efd; color: white; }
+        th a { color: white; text-decoration: none; }
+        th a:hover { text-decoration: underline; }
+        .btn-action { margin-right: 5px; }
+        .pagination { margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Верхняя панель: Языки и Корзина -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="lang-switcher">
+            <a th:href="@{/books(lang='en', page=${currentPage}, sortBy=${sortBy})}">EN</a> |
+            <a th:href="@{/books(lang='uk', page=${currentPage}, sortBy=${sortBy})}">UA</a>
+        </div>
+        <div>
+            <a th:href="@{/basket}" class="btn btn-outline-dark position-relative">
+                🛒 Shopping Basket
+                <!-- Здесь можно добавить счетчик товаров в будущем -->
+            </a>
+        </div>
+    </div>
+
+    <h2 class="mb-4 text-primary" th:text="#{book.list.title}">Available Books</h2>
+
+    <!-- Кнопка добавления для сотрудника -->
+    <div sec:authorize="hasRole('EMPLOYEE')" class="mb-3">
+        <a th:href="@{/books/add}" class="btn btn-success" th:text="#{book.add.title}">Add New Book</a>
+    </div>
+
+    <table class="table table-hover align-middle">
+        <thead>
+        <tr>
+            <!-- Заголовки с сортировкой -->
+            <th><a th:href="@{/books(page=${currentPage}, sortBy='name')}" th:text="#{book.name}">Name</a></th>
+            <th><a th:href="@{/books(page=${currentPage}, sortBy='author')}" th:text="#{book.author}">Author</a></th>
+            <th th:text="#{book.genre}">Genre</th>
+            <th><a th:href="@{/books(page=${currentPage}, sortBy='price')}" th:text="#{book.price}">Price</a></th>
+            <th th:text="#{book.language}">Language</th>
+            <th th:text="#{common.actions}">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.name}" class="fw-bold"></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.genre}"></td>
+            <td th:text="${book.price} + ' ₴'" class="text-success fw-bold"></td>
+            <td th:text="${book.language}"></td>
+            <td>
+                <div class="d-flex">
+                    <!-- Просмотр -->
+                    <a th:href="@{/books/view/{name}(name=${book.name})}" class="btn btn-sm btn-info btn-action text-white" th:text="#{common.view}">View</a>
+
+                    <!-- Добавить в корзину (только для клиентов) -->
+                    <form th:action="@{/basket/add}" method="post" sec:authorize="hasRole('CLIENT')">
+                        <input type="hidden" name="bookName" th:value="${book.name}">
+                        <button type="submit" class="btn btn-sm btn-primary btn-action">Add to Basket</button>
+                    </form>
+
+                    <!-- Удаление (только для сотрудников) -->
+                    <form sec:authorize="hasRole('EMPLOYEE')" th:action="@{/books/delete/{name}(name=${book.name})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger btn-action" th:text="#{common.delete}"
+                                onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Пагинация -->
+    <nav th:if="${totalPages > 1}" class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/books(page=${currentPage - 1}, sortBy=${sortBy})}">&laquo;</a>
+            </li>
+
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/books(page=${i}, sortBy=${sortBy})}" th:text="${i + 1}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/books(page=${currentPage + 1}, sortBy=${sortBy})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="mt-4">
+        <a th:href="@{/}" class="text-decoration-none">← <span th:text="#{nav.home}">Back to Home</span></a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

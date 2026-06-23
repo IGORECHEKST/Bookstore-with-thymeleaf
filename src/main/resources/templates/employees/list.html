@@ -1,62 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="#{employee.list.title}">Employees List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: header-css(#{employee.list.title})}"></head>
+<body>
 
-<div class="container mt-5">
-    <!-- Переключатель языков -->
-    <div class="text-end mb-3">
-        <a th:href="@{/employees(lang='en')}" class="text-decoration-none fw-bold">EN</a> |
-        <a th:href="@{/employees(lang='uk')}" class="text-decoration-none fw-bold">UA</a>
-    </div>
+<div th:replace="~{fragments/layout :: navbar}"></div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-dark" th:text="#{employee.list.title}">Employees</h2>
-        <a th:href="@{/employees/add}" class="btn btn-primary" th:text="'+ ' + #{employee.title}">+ Add Employee</a>
-    </div>
+<div class="main-wrapper">
+    <div class="container">
+        <div class="content-box">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                <h2 class="text-primary mb-0" th:text="#{employee.list.title}">Employees</h2>
+                <a th:href="@{/employees/add}" class="btn btn-success d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus-fill"></i> <span th:text="'+ ' + #{employee.title}">+ Add Employee</span>
+                </a>
+            </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-hover table-striped mb-0">
-                <thead class="table-dark">
-                <tr>
-                    <th th:text="#{employee.name}">Name</th>
-                    <th th:text="#{employee.email}">Email</th>
-                    <th th:text="#{employee.phone}">Phone</th>
-                    <th th:text="#{employee.birthDate}">Birth Date</th>
-                    <th class="text-center" th:text="#{common.actions}">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${#lists.isEmpty(employees)}">
-                    <td colspan="5" class="text-center text-muted">No employees found</td>
-                </tr>
-                <tr th:each="emp : ${employees}">
-                    <td th:text="${emp.name}" class="fw-bold"></td>
-                    <td th:text="${emp.email}"></td>
-                    <td th:text="${emp.phone != null ? emp.phone : '-'}"></td>
-                    <td th:text="${emp.birthDate != null ? #temporals.format(emp.birthDate, 'dd.MM.yyyy') : '-'}"></td>
-                    <td class="text-center">
-                        <div class="d-inline-flex gap-2">
-                            <a th:href="@{/employees/view(email=${emp.email})}" class="btn btn-sm btn-info text-white" th:text="#{common.view}">View</a>
-                            <form th:action="@{/employees/delete}" method="post" onsubmit="return confirm('Are you sure?');">
-                                <input type="hidden" name="email" th:value="${emp.email}"/>
-                                <button type="submit" class="btn btn-sm btn-danger" th:text="#{common.delete}">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th th:text="#{employee.name}">Name</th>
+                        <th th:text="#{employee.email}">Email</th>
+                        <th th:text="#{employee.phone}">Phone</th>
+                        <th th:text="#{employee.birthDate}">Birth Date</th>
+                        <th class="text-end" th:text="#{common.actions}">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="emp : ${employees}">
+                        <td class="fw-semibold text-dark">
+                            <i class="bi bi-person-badge text-muted me-2"></i>
+                            <span th:text="${emp.name}">Name</span>
+                        </td>
+                        <td th:text="${emp.email}"></td>
+                        <td th:text="${emp.phone != null ? emp.phone : '-'}"></td>
+                        <td th:text="${emp.birthDate != null ? #temporals.format(emp.birthDate, 'dd.MM.yyyy') : '-'}"></td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <a th:href="@{/employees/view(email=${emp.email})}" class="btn btn-sm btn-outline-primary" th:text="#{common.view}">View</a>
+                                <form th:action="@{/employees/delete}" method="post" class="m-0" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                    <input type="hidden" name="email" th:value="${emp.email}"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{common.delete}">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(employees)}">
+                        <td colspan="5" class="text-center py-4 text-muted">No employees found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <a th:href="@{/}" class="btn btn-outline-secondary" th:text="#{nav.home}">Back Home</a>
+            </div>
         </div>
     </div>
-    <div class="mt-4">
-        <a th:href="@{/}" class="btn btn-outline-secondary" th:text="#{nav.home}">Back Home</a>
-    </div>
 </div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: footer-js}"></div>
 </body>
 </html>

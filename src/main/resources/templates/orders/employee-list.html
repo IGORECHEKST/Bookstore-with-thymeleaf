@@ -1,63 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="#{nav.orders}">Employee Orders</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: header-css(#{nav.orders})}"></head>
+<body>
 
-<div class="container mt-5">
-    <h2 class="text-dark mb-4" th:text="#{nav.orders}">Managed Orders</h2>
+<div th:replace="~{fragments/layout :: navbar}"></div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-warning text-dark">
-                <tr>
-                    <th>#</th>
-                    <th th:text="#{nav.clients}">Client</th>
-                    <th th:text="#{nav.books}">Books</th>
-                    <th th:text="#{book.price}">Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${#lists.isEmpty(orders)}">
-                    <td colspan="6" class="text-center py-4 text-muted" th:text="#{error.404.message}">No orders found</td>
-                </tr>
-                <tr th:each="order, stat : ${orders}">
-                    <td th:text="${stat.count}"></td>
-                    <td th:text="${order.clientEmail}"></td>
-                    <td>
-                        <div th:each="item : ${order.bookItems}" class="small">
-                            <span th:text="${item.bookName}"></span> (x<span th:text="${item.quantity}"></span>)
-                        </div>
-                    </td>
-                    <td class="fw-bold" th:text="${order.price + ' ₴'}"></td>
-                    <td>
-                        <span class="badge"
-                              th:classappend="${order.employeeEmail != null ? 'bg-success' : 'bg-warning text-dark'}"
-                              th:text="${order.employeeEmail != null ? 'CONFIRMED' : 'PENDING'}">
-                        </span>
-                    </td>
-                    <td>
-                        <!-- Так как id в DTO нельзя, мы надеемся, что в объекте итерации он доступен
-                             (Spring/ModelMapper часто прокидывает его неявно, если поля совпадают) -->
-                        <form th:if="${order.employeeEmail == null}"
-                              th:action="@{/orders/confirm/{id}(id=${order.id})}" method="post">
-                            <button type="submit" class="btn btn-sm btn-outline-success">Confirm</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+<div class="main-wrapper">
+    <div class="container">
+        <div class="content-box">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                <h2 class="text-primary mb-0" th:text="#{nav.orders}">Managed Orders</h2>
+                <a th:href="@{/orders/create}" class="btn btn-success d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{order.create_for_client}">Create Order for Client</span>
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th style="width: 5%">#</th>
+                        <th th:text="#{nav.clients}">Client</th>
+                        <th th:text="#{nav.books}">Books</th>
+                        <th th:text="#{book.price}">Price</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order, stat : ${orders}">
+                        <td th:text="${stat.count}"></td>
+                        <td class="fw-semibold text-dark">
+                            <i class="bi bi-person-fill text-muted me-1"></i>
+                            <span th:text="${order.clientEmail}"></span>
+                        </td>
+                        <td>
+                            <div th:each="item : ${order.bookItems}" class="small text-secondary mb-1">
+                                <i class="bi bi-book-fill text-muted me-1"></i>
+                                <span class="fw-semibold text-dark" th:text="${item.bookName}"></span>
+                                <span class="badge bg-light text-dark border">x<span th:text="${item.quantity}"></span></span>
+                            </div>
+                        </td>
+                        <td class="fw-bold text-success" th:text="${order.price} + ' ₴'"></td>
+                        <td>
+                            <span class="badge px-3 py-2"
+                                  th:classappend="${order.employeeEmail != null ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'}"
+                                  th:text="${order.employeeEmail != null ? 'CONFIRMED' : 'PENDING'}">
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <form th:if="${order.employeeEmail == null}"
+                                  th:action="@{/orders/confirm/{id}(id=${order.id})}" method="post" class="m-0">
+                                <button type="submit" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-check2"></i> Confirm
+                                </button>
+                            </form>
+                            <span th:if="${order.employeeEmail != null}" class="text-muted small">
+                                <i class="bi bi-person-check"></i> <span th:text="${order.employeeEmail}"></span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="6" class="text-center py-4 text-muted" th:text="#{error.404.message}">No orders found</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <a th:href="@{/}" class="btn btn-outline-secondary" th:text="#{nav.home}">Back Home</a>
+            </div>
         </div>
     </div>
-    <div class="mt-4">
-        <a th:href="@{/}" class="btn btn-outline-secondary" th:text="#{nav.home}">Back Home</a>
-    </div>
 </div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: footer-js}"></div>
 </body>
 </html>

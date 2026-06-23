@@ -1,108 +1,134 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="#{book.list.title}">Available Books</title>
-    <!-- Подключаем Bootstrap для красивой пагинации и кнопок -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f8f9fa; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .lang-switcher a { text-decoration: none; font-weight: bold; color: #0d6efd; }
-        table thead { background-color: #0d6efd; color: white; }
-        th a { color: white; text-decoration: none; }
-        th a:hover { text-decoration: underline; }
-        .btn-action { margin-right: 5px; }
-        .pagination { margin-top: 20px; }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: header-css(#{book.list.title})}"></head>
 <body>
-<div class="container">
-    <!-- Верхняя панель: Языки и Корзина -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="lang-switcher">
-            <a th:href="@{/books(lang='en', page=${currentPage}, sortBy=${sortBy})}">EN</a> |
-            <a th:href="@{/books(lang='uk', page=${currentPage}, sortBy=${sortBy})}">UA</a>
-        </div>
-        <div>
-            <a th:href="@{/basket}" class="btn btn-outline-dark position-relative">
-                🛒 Shopping Basket
-                <!-- Здесь можно добавить счетчик товаров в будущем -->
-            </a>
-        </div>
-    </div>
 
-    <h2 class="mb-4 text-primary" th:text="#{book.list.title}">Available Books</h2>
+<div th:replace="~{fragments/layout :: navbar}"></div>
 
-    <!-- Кнопка добавления для сотрудника -->
-    <div sec:authorize="hasRole('EMPLOYEE')" class="mb-3">
-        <a th:href="@{/books/add}" class="btn btn-success" th:text="#{book.add.title}">Add New Book</a>
-    </div>
-
-    <table class="table table-hover align-middle">
-        <thead>
-        <tr>
-            <!-- Заголовки с сортировкой -->
-            <th><a th:href="@{/books(page=${currentPage}, sortBy='name')}" th:text="#{book.name}">Name</a></th>
-            <th><a th:href="@{/books(page=${currentPage}, sortBy='author')}" th:text="#{book.author}">Author</a></th>
-            <th th:text="#{book.genre}">Genre</th>
-            <th><a th:href="@{/books(page=${currentPage}, sortBy='price')}" th:text="#{book.price}">Price</a></th>
-            <th th:text="#{book.language}">Language</th>
-            <th th:text="#{common.actions}">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="book : ${books}">
-            <td th:text="${book.name}" class="fw-bold"></td>
-            <td th:text="${book.author}"></td>
-            <td th:text="${book.genre}"></td>
-            <td th:text="${book.price} + ' ₴'" class="text-success fw-bold"></td>
-            <td th:text="${book.language}"></td>
-            <td>
-                <div class="d-flex">
-                    <!-- Просмотр -->
-                    <a th:href="@{/books/view/{name}(name=${book.name})}" class="btn btn-sm btn-info btn-action text-white" th:text="#{common.view}">View</a>
-
-                    <!-- Добавить в корзину (только для клиентов) -->
-                    <form th:action="@{/basket/add}" method="post" sec:authorize="hasRole('CLIENT')">
-                        <input type="hidden" name="bookName" th:value="${book.name}">
-                        <button type="submit" class="btn btn-sm btn-primary btn-action">Add to Basket</button>
-                    </form>
-
-                    <!-- Удаление (только для сотрудников) -->
-                    <form sec:authorize="hasRole('EMPLOYEE')" th:action="@{/books/delete/{name}(name=${book.name})}" method="post">
-                        <button type="submit" class="btn btn-sm btn-danger btn-action" th:text="#{common.delete}"
-                                onclick="return confirm('Are you sure?')">Delete</button>
-                    </form>
+<div class="main-wrapper">
+    <div class="container">
+        <div class="content-box">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                <h2 class="text-primary mb-0" th:text="#{book.list.title}">Available Books</h2>
+                <!-- Add Button (Employee) -->
+                <div sec:authorize="hasRole('EMPLOYEE')">
+                    <a th:href="@{/books/add}" class="btn btn-success d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-plus-lg"></i> <span th:text="#{book.add.title}">Add New Book</span>
+                    </a>
                 </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
 
-    <!-- Пагинация -->
-    <nav th:if="${totalPages > 1}" class="d-flex justify-content-center">
-        <ul class="pagination">
-            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{/books(page=${currentPage - 1}, sortBy=${sortBy})}">&laquo;</a>
-            </li>
+            <!-- Search Bar -->
+            <form th:action="@{/books}" method="get" class="mb-4">
+                <input type="hidden" name="sortBy" th:value="${sortBy}">
+                <input type="hidden" name="sortDir" th:value="${sortDir}">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" th:value="${search}" class="form-control border-start-0 ps-0" th:placeholder="#{book.search.placeholder}">
+                    <button class="btn btn-primary" type="submit" th:text="#{book.search.button}">Search</button>
+                    <a th:if="${search != null && !search.isEmpty()}" th:href="@{/books(sortBy=${sortBy}, sortDir=${sortDir})}" class="btn btn-secondary border" th:text="#{book.search.clear}">Clear</a>
+                </div>
+            </form>
 
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                th:classappend="${i == currentPage} ? 'active'">
-                <a class="page-link" th:href="@{/books(page=${i}, sortBy=${sortBy})}" th:text="${i + 1}"></a>
-            </li>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <!-- Headers with Sort -->
+                        <th>
+                            <a th:href="@{/books(page=0, sortBy='name', sortDir=${sortBy == 'name' && sortDir == 'asc' ? 'desc' : 'asc'}, search=${search})}" class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
+                                <span th:text="#{book.name}">Name</span>
+                                <i th:if="${sortBy == 'name'}" th:class="${sortDir == 'asc'} ? 'bi bi-caret-up-fill text-primary' : 'bi bi-caret-down-fill text-primary'"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a th:href="@{/books(page=0, sortBy='author', sortDir=${sortBy == 'author' && sortDir == 'asc' ? 'desc' : 'asc'}, search=${search})}" class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
+                                <span th:text="#{book.author}">Author</span>
+                                <i th:if="${sortBy == 'author'}" th:class="${sortDir == 'asc'} ? 'bi bi-caret-up-fill text-primary' : 'bi bi-caret-down-fill text-primary'"></i>
+                            </a>
+                        </th>
+                        <th th:text="#{book.genre}">Genre</th>
+                        <th>
+                            <a th:href="@{/books(page=0, sortBy='price', sortDir=${sortBy == 'price' && sortDir == 'asc' ? 'desc' : 'asc'}, search=${search})}" class="text-decoration-none text-dark d-inline-flex align-items-center gap-1">
+                                <span th:text="#{book.price}">Price</span>
+                                <i th:if="${sortBy == 'price'}" th:class="${sortDir == 'asc'} ? 'bi bi-caret-up-fill text-primary' : 'bi bi-caret-down-fill text-primary'"></i>
+                            </a>
+                        </th>
+                        <th th:text="#{book.language}">Language</th>
+                        <th class="text-end" th:text="#{common.actions}">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="book : ${books}">
+                        <td class="fw-semibold text-dark">
+                            <i class="bi bi-book text-muted me-2"></i>
+                            <span th:text="${book.name}"></span>
+                        </td>
+                        <td th:text="${book.author}"></td>
+                        <td>
+                            <span class="badge bg-light text-dark border" th:text="${#messages.msgOrNull('genre.' + book.genre) ?: book.genre}"></span>
+                        </td>
+                        <td class="text-success fw-bold" th:text="${book.price} + ' ₴'"></td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-secondary-emphasis" th:text="${book.language}"></span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <!-- View -->
+                                <a th:href="@{/books/view/{name}(name=${book.name})}" class="btn btn-sm btn-outline-primary" th:text="#{common.view}">View</a>
 
-            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/books(page=${currentPage + 1}, sortBy=${sortBy})}">&raquo;</a>
-            </li>
-        </ul>
-    </nav>
+                                <!-- Add to Basket (Client Only) -->
+                                <form th:action="@{/basket/add}" method="post" sec:authorize="hasRole('CLIENT')" class="m-0">
+                                    <input type="hidden" name="bookName" th:value="${book.name}">
+                                    <button type="submit" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-cart-plus"></i> <span th:text="#{basket.add}">Add</span>
+                                    </button>
+                                </form>
 
-    <div class="mt-4">
-        <a th:href="@{/}" class="text-decoration-none">← <span th:text="#{nav.home}">Back to Home</span></a>
+                                <!-- Delete (Employee Only) -->
+                                <form sec:authorize="hasRole('EMPLOYEE')" th:action="@{/books/delete/{name}(name=${book.name})}" method="post" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{common.delete}"
+                                            onclick="return confirm('Are you sure you want to delete this book?')">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(books)}">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="bi bi-emoji-frown fs-2 d-block mb-2"></i>
+                            No books found matching the query.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" class="d-flex justify-content-center mt-4">
+                <ul class="pagination mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link shadow-none" th:href="@{/books(page=${currentPage - 1}, sortBy=${sortBy}, sortDir=${sortDir}, search=${search})}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link shadow-none" th:href="@{/books(page=${i}, sortBy=${sortBy}, sortDir=${sortDir}, search=${search})}" th:text="${i + 1}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link shadow-none" th:href="@{/books(page=${currentPage + 1}, sortBy=${sortBy}, sortDir=${sortDir}, search=${search})}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: footer-js}"></div>
 </body>
 </html>

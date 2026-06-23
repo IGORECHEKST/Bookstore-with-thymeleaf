@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="#{book.add.title}">Add Book</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .error-msg { color: red; font-size: 13px; margin-top: 3px; }
-        .btn-submit { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .back-link { display: inline-block; margin-top: 15px; color: #007bff; text-decoration: none; }
-    </style>
-</head>
+<head th:replace="~{fragments/layout :: header-css(#{book.add.title})}"></head>
 <body>
-<div class="container">
-    <h2 th:text="#{book.add.title}">Add New Book</h2>
 
-    <form th:action="@{/books/add}" th:object="${bookDTO}" method="post">
-        <div class="form-group">
-            <label th:text="#{book.name}">Name</label>
-            <input type="text" th:field="*{name}" />
-            <div class="error-msg" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="main-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="content-box shadow-md">
+                    <h2 class="mb-4 text-primary" th:text="#{book.add.title}">Add New Book</h2>
+
+                    <form th:action="@{/books/add}" th:object="${bookDTO}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label" th:text="#{book.name}">Name</label>
+                            <input type="text" th:field="*{name}" class="form-control" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" />
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" th:text="#{book.author}">Author</label>
+                            <input type="text" th:field="*{author}" class="form-control" th:classappend="${#fields.hasErrors('author')} ? 'is-invalid'" />
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" th:text="#{book.genre}">Genre</label>
+                            <input type="text" th:field="*{genre}" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" th:text="#{book.price}">Price</label>
+                            <input type="number" step="0.01" th:field="*{price}" class="form-control" th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'" />
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" th:text="#{book.language}">Language</label>
+                            <select th:field="*{language}" class="form-select">
+                                <option th:each="lang : ${T(com.epam.rd.autocode.spring.project.model.enums.Language).values()}"
+                                        th:value="${lang}" th:text="${lang}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" th:text="#{book.publicationDate}">Publication Date</label>
+                            <input type="date" th:field="*{publicationDate}" class="form-control" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" th:text="#{book.pages}">Pages</label>
+                            <input type="number" th:field="*{pages}" class="form-control" th:classappend="${#fields.hasErrors('pages')} ? 'is-invalid'" />
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('pages')}" th:errors="*{pages}"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between gap-2">
+                            <a th:href="@{/books}" class="btn btn-secondary px-4" th:text="#{common.cancel}">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4" th:text="#{common.save}">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label th:text="#{book.author}">Author</label>
-            <input type="text" th:field="*{author}" />
-            <div class="error-msg" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
-        </div>
-
-        <div class="form-group">
-            <label th:text="#{book.genre}">Genre</label>
-            <input type="text" th:field="*{genre}" />
-        </div>
-
-        <div class="form-group">
-            <label th:text="#{book.price}">Price</label>
-            <input type="number" step="0.01" th:field="*{price}" />
-            <div class="error-msg" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
-        </div>
-
-        <div class="form-group">
-            <label th:text="#{book.language}">Language</label>
-            <select th:field="*{language}">
-                <option th:each="lang : ${T(com.epam.rd.autocode.spring.project.model.enums.Language).values()}"
-                        th:value="${lang}" th:text="${lang}"></option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label th:text="#{book.publicationDate}">Publication Date</label>
-            <input type="date" th:field="*{publicationDate}" />
-        </div>
-
-        <div class="form-group">
-            <label th:text="#{book.pages}">Pages</label>
-            <input type="number" th:field="*{pages}" />
-            <div class="error-msg" th:if="${#fields.hasErrors('pages')}" th:errors="*{pages}"></div>
-        </div>
-
-        <button type="submit" class="btn-submit" th:text="#{common.save}">Save</button>
-    </form>
-
-    <a th:href="@{/books}" class="back-link">← <span th:text="#{common.cancel}">Cancel</span></a>
+    </div>
 </div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: footer-js}"></div>
 </body>
 </html>

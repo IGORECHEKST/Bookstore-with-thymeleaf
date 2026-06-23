@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="#{common.view}">Employee Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/layout :: header-css(#{common.view})}"></head>
+<body>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0" th:text="#{common.view}">Employee Card</h4>
-                </div>
-                <div class="card-body">
-                    <table class="table table-borderless">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="main-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="content-box profile-card shadow-lg">
+                    <h2 class="mb-4 text-info border-bottom pb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span th:text="#{common.view}">Employee Profile</span>
+                    </h2>
+
+                    <table class="table table-borderless align-middle mb-4">
                         <tr>
-                            <th scope="row" class="text-muted" style="width: 40%;" th:text="#{employee.name} + ':'">Name:</th>
-                            <td th:text="${employee.name}" class="fw-bold"></td>
+                            <th scope="row" class="text-muted ps-0" style="width: 40%;" th:text="#{employee.name} + ':'">Name:</th>
+                            <td th:text="${employee.name}" class="fw-bold text-dark"></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted" th:text="#{employee.email} + ':'">Email:</th>
+                            <th scope="row" class="text-muted ps-0" th:text="#{employee.email} + ':'">Email:</th>
                             <td th:text="${employee.email}"></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted" th:text="#{employee.phone} + ':'">Phone:</th>
+                            <th scope="row" class="text-muted ps-0" th:text="#{employee.phone} + ':'">Phone:</th>
                             <td th:text="${employee.phone != null ? employee.phone : '-'}"></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="text-muted" th:text="#{employee.birthDate} + ':'">Birth Date:</th>
+                            <th scope="row" class="text-muted ps-0" th:text="#{employee.birthDate} + ':'">Birth Date:</th>
                             <td th:text="${employee.birthDate != null ? #temporals.format(employee.birthDate, 'dd MMMM yyyy') : '-'}"></td>
                         </tr>
                     </table>
 
-                    <div class="d-flex justify-content-end mt-4">
-                        <a th:href="@{/employees}" class="btn btn-secondary" th:text="#{common.back}">Back to List</a>
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <a th:href="@{/}" class="btn btn-outline-secondary" th:text="#{nav.home}">Back Home</a>
+                        <a th:href="@{/employees}" class="btn btn-primary" th:text="#{common.back}">Back to List</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: footer-js}"></div>
 </body>
 </html>

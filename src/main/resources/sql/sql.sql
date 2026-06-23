@@ -1,6 +1,6 @@
 INSERT INTO EMPLOYEES (BIRTH_DATE, EMAIL, NAME, PASSWORD, PHONE)
 VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', '$2a$10$AfYOsevblqZI7f3XHc7YsuecapX4tqa2PAY.89sRjLCTybkZODegu', '555-123-4567'), -- pass123
-       ('1985-09-20', 'jane.smith@email.com', 'Jane Smith', '$2a$10$eqGSW6/2mIaq4WKhQtfLg.p0In3WN7XXBGb5r1Ww.DkVfP/EifIF', '555-987-6543'), -- abc456
+       ('1985-09-20', 'jane.smith@email.com', 'Jane Smith', '$2a$10$XVNFtsIweh7lgaeGP/Rvl.CPCYLsowPmWxp5hWEkqMbFzAZ6dW09C', '555-987-6543'), -- abc456
        ('1978-03-08', 'bob.jones@email.com', 'Bob Jones', '$2a$10$ycOlJJ2uXaKWfajHv/N5a.QHtPZRGnCpcsXI60mxwoUsne2NlF1Gi', '555-321-6789'), -- qwerty789
        ('1982-11-25', 'alice.white@email.com', 'Alice White', '$2a$10$fN6EdRfsFDgFlfNTF/awje0wa/aEtcSnoMK7be7u/jrRYUkzhOFbC', '555-876-5432'), -- secret567
        ('1995-07-12', 'mike.wilson@email.com', 'Mike Wilson', '$2a$10$/Xu9zTKvnm0EtxLBzFru1O6aGdRU/ej/M1kXSoJ2vffFaGLeZ3duO', '555-234-5678'), -- mypassword
@@ -11,7 +11,7 @@ VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', '$2a$10$AfYOsevblqZI7f3X
        ('1980-04-10', 'emily.harris@email.com', 'Emily Harris', '$2a$10$mLccOT02MDhAzXwIFudESOYlOBB/4IzEviBiJFUZiE0EipPLbPsVa', '555-098-7654'); -- 1234abcd
 
 INSERT INTO CLIENTS (BALANCE, EMAIL, NAME, PASSWORD)
-VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', '$2a$10$6PkFQ0TLuk/ciAUJBX.Yn.Ldxmr5hNOPxm0zBU2bb6JRwvy4GfIo'), -- password123
+VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', '$2a$10$43XzpvsWUrVZVJtsJM8e1eUdhes6Hlaso.6dv3prgNc54lE2xJo9q'), -- password123
        (1500.50, 'client2@example.com', 'Landon Phillips', '$2a$10$yCQ8JRE5LavOALJRDGUC/uVa07NhYjhpLvQFCdkCLjlK/8RCsiDXi'), -- securepass
        (800.75, 'client3@example.com', 'Harmony Mason', '$2a$10$IOKcYdf6kHJIUu1teEneNOUNOBPxYnkqDaorOsAlPkeQIkzinx/ji'), -- abc123
        (1200.25, 'client4@example.com', 'Archer Harper', '$2a$10$J8YMS3GbUTAAIo379RMxPureKIMgPIFWck0gHA4qjxhVku/kCPH0'), -- pass456

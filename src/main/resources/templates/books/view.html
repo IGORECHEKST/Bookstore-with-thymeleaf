@@ -1,41 +1,80 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="#{book.view.title}">Book Details</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .book-title { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        .info-group { margin-bottom: 12px; font-size: 16px; }
-        .info-label { font-weight: bold; color: #555; }
-        .description { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; margin-top: 15px; }
-        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
-    </style>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: header-css(#{book.view.title})}"></head>
 <body>
-<div class="container">
-    <h2 class="book-title" th:text="${book.name}">Book Name</h2>
 
-    <div class="info-group">
-        <span class="info-label" th:text="#{book.author} + ':'">Author:</span> <span th:text="${book.author}"></span>
-    </div>
-    <div class="info-group">
-        <span class="info-label" th:text="#{book.genre} + ':'">Genre:</span> <span th:text="${book.genre}"></span>
-    </div>
-    <div class="info-group">
-        <span class="info-label" th:text="#{book.language} + ':'">Language:</span> <span th:text="${book.language}"></span>
-    </div>
-    <div class="info-group">
-        <span class="info-label" th:text="#{book.price} + ':'">Price:</span> <span style="color: #28a745; font-weight: bold;" th:text="${book.price} + ' грн'"></span>
-    </div>
+<div th:replace="~{fragments/layout :: navbar}"></div>
 
-    <div class="description">
-        <span class="info-label" th:text="#{book.description} + ':'">Description:</span>
-        <p th:text="${book.description}">Description content...</p>
-    </div>
+<div class="main-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="content-box shadow-md">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <i class="bi bi-book-half text-primary fs-1"></i>
+                        <div>
+                            <h2 class="mb-1 text-primary" th:text="${book.name}">Book Name</h2>
+                            <span class="text-muted" th:text="${book.author}">Author</span>
+                        </div>
+                    </div>
 
-    <a th:href="@{/books}" class="back-link">← <span th:text="#{common.back}">Back</span></a>
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <th scope="row" class="text-muted ps-0" style="width: 30%;" th:text="#{book.author} + ':'">Author:</th>
+                                    <td th:text="${book.author}"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted ps-0" th:text="#{book.genre} + ':'">Genre:</th>
+                                    <td><span class="badge bg-light text-dark border" th:text="${#messages.msgOrNull('genre.' + book.genre) ?: book.genre}"></span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted ps-0" th:text="#{book.language} + ':'">Language:</th>
+                                    <td th:text="${book.language}"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted ps-0" th:text="#{book.price} + ':'">Price:</th>
+                                    <td class="text-success fw-bold fs-5" th:text="${book.price} + ' ₴'"></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Description Block -->
+                        <div class="col-md-12">
+                            <div class="p-3 bg-light rounded border-start border-4 border-primary mt-3">
+                                <h6 class="fw-bold mb-2" th:text="#{book.description} + ':'">Description:</h6>
+                                <p class="text-secondary mb-0" th:text="${book.description}">Description content...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                        <a th:href="@{/books}" class="btn btn-outline-secondary" th:text="#{common.back}">Back</a>
+                        
+                        <div class="d-flex gap-2">
+                            <!-- Add to Basket (Client Only) -->
+                            <form th:action="@{/basket/add}" method="post" sec:authorize="hasRole('CLIENT')" class="m-0">
+                                <input type="hidden" name="bookName" th:value="${book.name}">
+                                <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-cart-plus"></i> <span th:text="#{basket.add}">Add to Basket</span>
+                                </button>
+                            </form>
+
+                            <!-- Employee Actions -->
+                            <a sec:authorize="hasRole('EMPLOYEE')" th:href="@{/books/edit/{name}(name=${book.name})}" class="btn btn-warning text-dark fw-semibold" th:text="#{common.edit}">Edit</a>
+                            <form sec:authorize="hasRole('EMPLOYEE')" th:action="@{/books/delete/{name}(name=${book.name})}" method="post" class="m-0" onsubmit="return confirm('Are you sure?')">
+                                <button type="submit" class="btn btn-outline-danger" th:text="#{common.delete}">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: footer-js}"></div>
 </body>
 </html>

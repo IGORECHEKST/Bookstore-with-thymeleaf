@@ -1,13 +1,16 @@
 package com.epam.rd.autocode.spring.project.conf;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration.AccessLevel;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import java.util.Locale;
 
@@ -19,15 +22,15 @@ public class BaseConfig implements WebMvcConfigurer {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration()
                 .setFieldMatchingEnabled(true)
-                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+                .setFieldAccessLevel(AccessLevel.PRIVATE);
         return mapper;
     }
 
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.ENGLISH);
-        return slr;
+        CookieLocaleResolver clr = new CookieLocaleResolver();
+        clr.setDefaultLocale(Locale.ENGLISH);
+        return clr;
     }
 
     @Bean
@@ -43,9 +46,9 @@ public class BaseConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public org.springframework.context.MessageSource messageSource() {
-        org.springframework.context.support.ReloadableResourceBundleMessageSource messageSource =
-                new org.springframework.context.support.ReloadableResourceBundleMessageSource();
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource =
+                new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;

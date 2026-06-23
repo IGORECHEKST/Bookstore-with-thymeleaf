@@ -9,6 +9,7 @@ import com.epam.rd.autocode.spring.project.repo.ClientRepository;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.ClientBlockingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ClientBlockingServiceImpl implements ClientBlockingService {
 
     private final ClientRepository clientRepository;
@@ -25,11 +27,18 @@ public class ClientBlockingServiceImpl implements ClientBlockingService {
     @Override
     @Transactional
     public boolean blockClient(String clientEmail, String reason, String employeeEmail) {
+        log.info("Employee {} is attempting to block client {} with reason: {}", employeeEmail, clientEmail, reason);
         Client client = clientRepository.findByEmail(clientEmail)
-                .orElseThrow(() -> new NotFoundException("Client not found with email: " + clientEmail));
+                .orElseThrow(() -> {
+                    log.warn("Client not found for blocking with email: {}", clientEmail);
+                    return new NotFoundException("Client not found with email: " + clientEmail);
+                });
 
         Employee employee = employeeRepository.findByEmail(employeeEmail)
-                .orElseThrow(() -> new NotFoundException("Employee not found with email: " + employeeEmail));
+                .orElseThrow(() -> {
+                    log.warn("Employee not found with email: {}", employeeEmail);
+                    return new NotFoundException("Employee not found with email: " + employeeEmail);
+                });
 
         Optional<ClientBlockingStatus> existingStatusOpt = clientBlockingStatusRepository.findByClientEmail(clientEmail);
         ClientBlockingStatus status;
@@ -37,6 +46,7 @@ public class ClientBlockingServiceImpl implements ClientBlockingService {
         if (existingStatusOpt.isPresent()) {
             status = existingStatusOpt.get();
             if (status.getIsBlocked()) {
+                log.warn("Client {} is already blocked", clientEmail);
                 return false;
             }
         } else {
@@ -48,21 +58,30 @@ public class ClientBlockingServiceImpl implements ClientBlockingService {
         status.setBlockedByEmployee(employee);
         status.setBlockReason(reason);
         clientBlockingStatusRepository.save(status);
+        log.info("Client {} successfully blocked by Employee {}", clientEmail, employeeEmail);
         return true;
     }
 
     @Override
     @Transactional
     public boolean unblockClient(String clientEmail, String employeeEmail) {
+        log.info("Employee {} is attempting to unblock client {}", employeeEmail, clientEmail);
         Client client = clientRepository.findByEmail(clientEmail)
-                .orElseThrow(() -> new NotFoundException("Client not found with email: " + clientEmail));
+                .orElseThrow(() -> {
+                    log.warn("Client not found for unblocking with email: {}", clientEmail);
+                    return new NotFoundException("Client not found with email: " + clientEmail);
+                });
 
         Employee employee = employeeRepository.findByEmail(employeeEmail)
-                .orElseThrow(() -> new NotFoundException("Employee not found with email: " + employeeEmail));
+                .orElseThrow(() -> {
+                    log.warn("Employee not found with email: {}", employeeEmail);
+                    return new NotFoundException("Employee not found with email: " + employeeEmail);
+                });
 
         Optional<ClientBlockingStatus> existingStatusOpt = clientBlockingStatusRepository.findByClientEmail(clientEmail);
 
         if (existingStatusOpt.isEmpty() || !existingStatusOpt.get().getIsBlocked()) {
+            log.warn("Client {} is not blocked, cannot unblock", clientEmail);
             return false;
         }
 
@@ -71,6 +90,7 @@ public class ClientBlockingServiceImpl implements ClientBlockingService {
         status.setBlockedByEmployee(employee);
         status.setBlockReason(null);
         clientBlockingStatusRepository.save(status);
+        log.info("Client {} successfully unblocked by Employee {}", clientEmail, employeeEmail);
         return true;
     }
 

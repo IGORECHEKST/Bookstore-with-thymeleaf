@@ -14,6 +14,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.client.email = :email")
     List<Order> findAllByClientEmail(@Param("email") String email);
 
-    @Query("SELECT o FROM Order o WHERE o.employee.email = :email")
+    @Query("SELECT o FROM Order o LEFT JOIN o.employee e WHERE e.email = :email OR e IS NULL")
     List<Order> findAllByEmployeeEmail(@Param("email") String email);
 }

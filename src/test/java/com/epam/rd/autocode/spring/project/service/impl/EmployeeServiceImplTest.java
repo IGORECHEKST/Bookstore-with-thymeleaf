@@ -133,4 +133,40 @@ public class EmployeeServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> employeeService.deleteEmployeeByEmail("nonexistent@example.com"));
     }
+
+    @Test
+    public void testUpdateEmployeeByEmail_NotFound() {
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                employeeService.updateEmployeeByEmail("emp@example.com", employeeDTO));
+    }
+
+    @Test
+    public void testUpdateEmployeeByEmail_PasswordNull() {
+        employeeDTO.setPassword(null);
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(employee)).thenReturn(employee);
+        when(modelMapper.map(employee, EmployeeDTO.class)).thenReturn(employeeDTO);
+
+        EmployeeDTO result = employeeService.updateEmployeeByEmail("emp@example.com", employeeDTO);
+
+        assertNotNull(result);
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(employeeRepository).save(employee);
+    }
+
+    @Test
+    public void testUpdateEmployeeByEmail_PasswordBlank() {
+        employeeDTO.setPassword("   ");
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(employee)).thenReturn(employee);
+        when(modelMapper.map(employee, EmployeeDTO.class)).thenReturn(employeeDTO);
+
+        EmployeeDTO result = employeeService.updateEmployeeByEmail("emp@example.com", employeeDTO);
+
+        assertNotNull(result);
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(employeeRepository).save(employee);
+    }
 }

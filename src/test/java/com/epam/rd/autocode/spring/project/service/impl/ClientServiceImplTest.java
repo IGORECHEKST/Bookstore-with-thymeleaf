@@ -135,4 +135,40 @@ public class ClientServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> clientService.deleteClientByEmail("nonexistent@example.com"));
     }
+
+    @Test
+    public void testUpdateClientByEmail_NotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                clientService.updateClientByEmail("client@example.com", clientDTO));
+    }
+
+    @Test
+    public void testUpdateClientByEmail_PasswordNull() {
+        clientDTO.setPassword(null);
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(clientRepository.save(client)).thenReturn(client);
+        when(modelMapper.map(client, ClientDTO.class)).thenReturn(clientDTO);
+
+        ClientDTO result = clientService.updateClientByEmail("client@example.com", clientDTO);
+
+        assertNotNull(result);
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(clientRepository).save(client);
+    }
+
+    @Test
+    public void testUpdateClientByEmail_PasswordBlank() {
+        clientDTO.setPassword("   ");
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(clientRepository.save(client)).thenReturn(client);
+        when(modelMapper.map(client, ClientDTO.class)).thenReturn(clientDTO);
+
+        ClientDTO result = clientService.updateClientByEmail("client@example.com", clientDTO);
+
+        assertNotNull(result);
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(clientRepository).save(client);
+    }
 }

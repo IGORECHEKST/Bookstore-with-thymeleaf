@@ -89,4 +89,14 @@ public class EmployeeControllerTest {
 
         verify(employeeService).deleteEmployeeByEmail("emp@example.com");
     }
+
+    @Test
+    public void testAddEmployee_ValidationError() throws Exception {
+        mockMvc.perform(post("/employees/add")
+                        .param("email", "invalid-email")
+                        .param("name", "")
+                        .param("password", "12"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("employees/add"));
+    }
 }

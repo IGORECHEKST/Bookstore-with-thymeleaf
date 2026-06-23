@@ -109,4 +109,37 @@ public class OrderControllerTest {
                 .andExpect(view().name("orders/create"))
                 .andExpect(model().attributeExists("orderDTO"));
     }
+
+    @Test
+    public void testCheckout_NullBasket() throws Exception {
+        // MockHttpSession is empty, session attribute "basket" is null.
+        mockMvc.perform(get("/orders/checkout"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/basket"));
+    }
+
+    @Test
+    public void testPlaceOrder_Success() throws Exception {
+        when(orderService.addOrder(any(OrderDTO.class))).thenReturn(new OrderDTO());
+
+        mockMvc.perform(post("/orders/create")
+                        .param("clientEmail", "client@example.com")
+                        .param("price", "100.00")
+                        .param("bookItems[0].bookName", "Test Book")
+                        .param("bookItems[0].quantity", "1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/orders/client/client@example.com"));
+
+        verify(orderService).addOrder(any(OrderDTO.class));
+    }
+
+    @Test
+    public void testPlaceOrder_ValidationError() throws Exception {
+        // Let's assume OrderDTO validation triggers when clientEmail is blank
+        // Let's verify if clientEmail is annotated with NotBlank. We can inspect OrderDTO if needed, but passing empty string is standard.
+        mockMvc.perform(post("/orders/create")
+                        .param("clientEmail", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("orders/create"));
+    }
 }

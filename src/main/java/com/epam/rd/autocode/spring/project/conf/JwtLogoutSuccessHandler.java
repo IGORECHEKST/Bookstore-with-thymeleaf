@@ -22,7 +22,7 @@ public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setPath("/");
-        cookie.setMaxAge(0); // clear cookie
+        cookie.setMaxAge(0);
 
         response.addCookie(cookie);
 

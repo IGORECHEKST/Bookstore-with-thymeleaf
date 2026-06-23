@@ -97,4 +97,20 @@ public class JwtServiceTest {
         String token = jwtService.generateToken(authentication);
         assertFalse(jwtService.isTokenValid(token, userDetails));
     }
+
+    @Test
+    public void testExtractClaim_InvalidToken() {
+        String invalidToken = "some.invalid.token";
+        assertNull(jwtService.extractUsername(invalidToken));
+    }
+
+    @Test
+    public void testIsTokenValid_InvalidToken() {
+        UserDetails userDetails = new User(
+                "test@example.com",
+                "password",
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENT"))
+        );
+        assertFalse(jwtService.isTokenValid("some.invalid.token", userDetails));
+    }
 }

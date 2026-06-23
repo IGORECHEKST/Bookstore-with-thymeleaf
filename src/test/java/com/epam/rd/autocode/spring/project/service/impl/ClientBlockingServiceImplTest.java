@@ -6,6 +6,7 @@ import com.epam.rd.autocode.spring.project.model.Employee;
 import com.epam.rd.autocode.spring.project.repo.ClientBlockingStatusRepository;
 import com.epam.rd.autocode.spring.project.repo.ClientRepository;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
+import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -114,5 +115,83 @@ public class ClientBlockingServiceImplTest {
         boolean result = clientBlockingService.isClientBlocked("client@example.com");
 
         assertTrue(result);
+    }
+
+    @Test
+    public void testBlockClient_ClientNotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                clientBlockingService.blockClient("client@example.com", "spam", "emp@example.com"));
+    }
+
+    @Test
+    public void testBlockClient_EmployeeNotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                clientBlockingService.blockClient("client@example.com", "spam", "emp@example.com"));
+    }
+
+    @Test
+    public void testBlockClient_ExistingStatusPresentNotBlocked() {
+        status.setIsBlocked(false);
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.of(employee));
+        when(clientBlockingStatusRepository.findByClientEmail("client@example.com")).thenReturn(Optional.of(status));
+
+        boolean result = clientBlockingService.blockClient("client@example.com", "spam", "emp@example.com");
+
+        assertTrue(result);
+        assertTrue(status.getIsBlocked());
+        verify(clientBlockingStatusRepository).save(status);
+    }
+
+    @Test
+    public void testUnblockClient_ClientNotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                clientBlockingService.unblockClient("client@example.com", "emp@example.com"));
+    }
+
+    @Test
+    public void testUnblockClient_EmployeeNotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                clientBlockingService.unblockClient("client@example.com", "emp@example.com"));
+    }
+
+    @Test
+    public void testUnblockClient_ExistingStatusEmpty() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(employeeRepository.findByEmail("emp@example.com")).thenReturn(Optional.of(employee));
+        when(clientBlockingStatusRepository.findByClientEmail("client@example.com")).thenReturn(Optional.empty());
+
+        boolean result = clientBlockingService.unblockClient("client@example.com", "emp@example.com");
+
+        assertFalse(result);
+        verify(clientBlockingStatusRepository, never()).save(any(ClientBlockingStatus.class));
+    }
+
+    @Test
+    public void testIsClientBlocked_ClientNotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                clientBlockingService.isClientBlocked("client@example.com"));
+    }
+
+    @Test
+    public void testIsClientBlocked_StatusNotFound() {
+        when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
+        when(clientBlockingStatusRepository.findByClientEmail("client@example.com")).thenReturn(Optional.empty());
+
+        boolean result = clientBlockingService.isClientBlocked("client@example.com");
+
+        assertFalse(result);
     }
 }

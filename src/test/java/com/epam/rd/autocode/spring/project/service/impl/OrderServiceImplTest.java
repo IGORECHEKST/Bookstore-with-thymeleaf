@@ -176,4 +176,16 @@ public class OrderServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> orderService.assignEmployeeToOrder(10L, "emp@example.com"));
     }
+
+    @Test
+    public void testGetOrdersByClient_NullEmployee() {
+        order.setEmployee(null);
+        when(orderRepository.findAllByClientEmail("client@example.com")).thenReturn(Collections.singletonList(order));
+
+        List<OrderDTO> result = orderService.getOrdersByClient("client@example.com");
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getEmployeeEmail());
+    }
 }

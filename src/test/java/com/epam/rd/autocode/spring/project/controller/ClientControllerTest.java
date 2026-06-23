@@ -102,4 +102,55 @@ public class ClientControllerTest {
 
         verify(clientService).deleteClientByEmail("client@example.com");
     }
+
+    @Test
+    public void testShowEditForm() throws Exception {
+        ClientDTO client = new ClientDTO();
+        client.setEmail("client@example.com");
+        when(clientService.getClientByEmail("client@example.com")).thenReturn(client);
+
+        mockMvc.perform(get("/clients/edit/client@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("clients/edit"))
+                .andExpect(model().attributeExists("clientDTO"))
+                .andExpect(model().attribute("email", "client@example.com"));
+    }
+
+    @Test
+    public void testUpdateProfile_Success() throws Exception {
+        mockMvc.perform(post("/clients/edit/client@example.com")
+                        .param("email", "client@example.com")
+                        .param("name", "John Updated")
+                        .param("password", "newpassword123")
+                        .param("balance", "50.00"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/clients/view/client@example.com"));
+
+        verify(clientService).updateClientByEmail(eq("client@example.com"), any(ClientDTO.class));
+    }
+
+    @Test
+    public void testUpdateProfile_ValidationError() throws Exception {
+        mockMvc.perform(post("/clients/edit/client@example.com")
+                        .param("email", "invalid-email")
+                        .param("name", "")
+                        .param("password", "12")
+                        .param("balance", "-5.00"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("clients/edit"))
+                .andExpect(model().attribute("email", "client@example.com"));
+    }
+
+    @Test
+    public void testDeleteAccount_OwnAccount() throws Exception {
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("client@example.com"); // deleting own account
+
+        mockMvc.perform(post("/clients/delete/client@example.com")
+                        .principal(authentication))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?deleted"));
+
+        verify(clientService).deleteClientByEmail("client@example.com");
+    }
 }

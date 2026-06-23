@@ -132,4 +132,53 @@ public class BookServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> bookService.deleteBookByName("Nonexistent"));
     }
+
+    @Test
+    public void testUpdateBookByName_NotFound() {
+        when(bookRepository.findByName("Nonexistent")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookService.updateBookByName("Nonexistent", bookDTO));
+    }
+
+    @Test
+    public void testSearchBooks_NullQuery() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(Collections.singletonList(book));
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(modelMapper.map(book, BookDTO.class)).thenReturn(bookDTO);
+
+        Page<BookDTO> result = bookService.searchBooks(null, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(bookRepository).findAll(pageable);
+    }
+
+    @Test
+    public void testSearchBooks_EmptyQuery() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(Collections.singletonList(book));
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(modelMapper.map(book, BookDTO.class)).thenReturn(bookDTO);
+
+        Page<BookDTO> result = bookService.searchBooks("   ", pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(bookRepository).findAll(pageable);
+    }
+
+    @Test
+    public void testSearchBooks_ValidQuery() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Book> bookPage = new PageImpl<>(Collections.singletonList(book));
+        when(bookRepository.searchBooks("query", pageable)).thenReturn(bookPage);
+        when(modelMapper.map(book, BookDTO.class)).thenReturn(bookDTO);
+
+        Page<BookDTO> result = bookService.searchBooks("  query  ", pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(bookRepository).searchBooks("query", pageable);
+    }
 }

@@ -21,9 +21,8 @@ public class JwtServiceTest {
     @BeforeEach
     public void setUp() {
         jwtService = new JwtService();
-        // Set values manually as they would be injected by Spring
         ReflectionTestUtils.setField(jwtService, "secretKey", "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970");
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", 3600000L); // 1 hour
+        ReflectionTestUtils.setField(jwtService, "jwtExpiration", 3600000L);
     }
 
     @Test
@@ -82,8 +81,7 @@ public class JwtServiceTest {
 
     @Test
     public void testIsTokenExpired() {
-        // Set short expiration
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -1000L); // Expired 1 second ago
+        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -1000L);
 
         UserDetails userDetails = new User(
                 "test@example.com",

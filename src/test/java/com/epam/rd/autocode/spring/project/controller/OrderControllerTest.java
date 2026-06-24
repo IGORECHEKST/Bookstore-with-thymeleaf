@@ -112,7 +112,6 @@ public class OrderControllerTest {
 
     @Test
     public void testCheckout_NullBasket() throws Exception {
-        // MockHttpSession is empty, session attribute "basket" is null.
         mockMvc.perform(get("/orders/checkout"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/basket"));
@@ -135,8 +134,6 @@ public class OrderControllerTest {
 
     @Test
     public void testPlaceOrder_ValidationError() throws Exception {
-        // Let's assume OrderDTO validation triggers when clientEmail is blank
-        // Let's verify if clientEmail is annotated with NotBlank. We can inspect OrderDTO if needed, but passing empty string is standard.
         mockMvc.perform(post("/orders/create")
                         .param("clientEmail", ""))
                 .andExpect(status().isOk())

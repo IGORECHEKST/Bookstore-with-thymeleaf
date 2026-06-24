@@ -144,8 +144,8 @@ public class BookControllerTest {
     @Test
     public void testAddBook_ValidationError() throws Exception {
         mockMvc.perform(post("/books/add")
-                        .param("name", "") // validation error (blank)
-                        .param("price", "-10")) // validation error (negative)
+                        .param("name", "")
+                        .param("price", "-10"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("books/add"));
     }
@@ -177,8 +177,8 @@ public class BookControllerTest {
     @Test
     public void testUpdateBook_ValidationError() throws Exception {
         mockMvc.perform(post("/books/edit/OriginalBookName")
-                        .param("name", "") // validation error
-                        .param("price", "0")) // validation error (must be positive)
+                        .param("name", "")
+                        .param("price", "0"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("books/edit"))
                 .andExpect(model().attribute("originalName", "OriginalBookName"));

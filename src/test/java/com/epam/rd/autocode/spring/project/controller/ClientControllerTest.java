@@ -93,7 +93,7 @@ public class ClientControllerTest {
     @Test
     public void testDeleteAccount_OtherClient() throws Exception {
         Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("emp@example.com"); // deleting another user
+        when(authentication.getName()).thenReturn("emp@example.com");
 
         mockMvc.perform(post("/clients/delete/client@example.com")
                         .principal(authentication))
@@ -144,7 +144,7 @@ public class ClientControllerTest {
     @Test
     public void testDeleteAccount_OwnAccount() throws Exception {
         Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("client@example.com"); // deleting own account
+        when(authentication.getName()).thenReturn("client@example.com");
 
         mockMvc.perform(post("/clients/delete/client@example.com")
                         .principal(authentication))

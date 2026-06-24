@@ -29,7 +29,7 @@ public class JwtAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
         cookie.setHttpOnly(true);
         cookie.setSecure(request.isSecure());
         cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60); // 1 day
+        cookie.setMaxAge(24 * 60 * 60);
 
         response.addCookie(cookie);
 

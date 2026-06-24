@@ -42,3 +42,4 @@ public class LocaleFilter implements Filter {
         chain.doFilter(request, response);
     }
 }
+

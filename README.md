@@ -1,161 +1,151 @@
-# Book Store. Spring Project
+# 📚 Book Store Service
 
-The purpose of this task is to check your knowledge and understanding in Java and Spring.
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Security](https://img.shields.io/badge/Spring%20Security-6.2.1-red.svg)](https://spring.io/projects/spring-security)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)](https://www.docker.com/)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.org/projects/jdk/17/)
 
-Duration: **15** hours
+Welcome to the **Book Store Service**—a robust, production-ready enterprise e-commerce platform built on Spring Boot, designed to streamline operations for bookstore managers (employees) and offer a seamless book purchasing experience for readers (customers). 
 
-## Description
+Inspired by the challenge of moving traditional bookstores into a high-performance digital space, this project combines modern software engineering patterns, role-based access control, automated database seeding, and containerized deployment pipelines.
 
-Your objective is to develop a "Book Store Service" following the MVC pattern.
+---
 
-> Project may have two main roles of authority: customer and employee.
+## 🎨 System Architecture & Domain Model
 
-The project structure is already set up, with essential classes waiting for implementation in their respective folders.
-Your project is organized into several packages. Here's a brief overview of each:
+The service is built following clean **MVC (Model-View-Controller)** principles. Below is the domain model diagram visualizing entity relationships and authentication schemas:
 
-### Packages Overview
+<p align="center">
+  <img src="img/Diagram.png" alt="Domain Model Diagram" width="900" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+</p>
 
-#### `conf`
+### Interactive User Flows
+```mermaid
+graph TD
+    A[Visitor] -->|Registration / Sign In| B{Authenticated?}
+    B -->|Customer Role| C[Customer Dashboard]
+    B -->|Employee Role| D[Employee Panel]
+    
+    C -->|Browse Books| E[Add to Basket]
+    E -->|Create Purchase| F[Submit Order]
+    
+    D -->|Catalog Management| G[Create/Edit/Delete Books]
+    D -->|Order Processing| H[Confirm Customer Orders]
+    D -->|User Management| I[Block / Unblock Customers]
+```
 
-- Houses all configuration classes.
+---
 
-#### `controller`
+## 🛠️ Technology Stack & Tools
 
-- Contains controller files.
+* **Core Framework**: `Spring Boot 3.2.1` & `Java 17`
+* **Security & Authentication**: `Spring Security 6` (JWT-based session authentication for APIs, role-based URL authorization filters)
+* **Persistence Layer**: `Spring Data JPA` / `Hibernate ORM`
+* **Databases**: `MySQL 8.0` (Production) & `H2 Database` (In-memory testing)
+* **Templating Engine**: `Thymeleaf` with `thymeleaf-extras-springsecurity6` integration
+* **Mapping & Utility**: `ModelMapper` (DTO mapping) & `Lombok` (boilerplate reduction)
+* **DevOps & Containerization**: `Docker` & `Docker Compose`
+* **Quality Assurance**: `JUnit 5`, `Mockito`, and `Spring Security Test`
 
-#### `dto`
+---
 
-- Contains DTO files.
+## 🔐 Roles and Permissions
 
-#### `model`
+The system operates with two distinct privilege tiers:
 
-- Contains all model classes.
+### 👤 Customer (Reader)
+* **Basket Management**: Add books to the basket, manage quantities, and delete items.
+* **Order Processing**: Place orders and track order histories.
+* **Profile Management**: Edit personal details, view balance, and request account deletion.
 
-#### `exception`
+### 💼 Employee (Manager)
+* **Catalog Control**: Full CRUD operations on the book catalog (add, update, delete books).
+* **Order Confirmation**: Manage and approve pending client orders.
+* **User Control**: Access list of registered customers, and block/unblock customer accounts to maintain system security.
 
-- Contains custom user exception files.
+---
 
-#### `repo`
+## 📂 Project Structure & Packages
 
-- Contains repository files.
+* `conf`: System-wide beans, custom filters (`LocaleFilter`, `JwtAuthenticationFilter`), and Spring Security settings.
+* `controller`: Web and API endpoints orchestrating data flow.
+* `dto`: Clean, isolated data structures mapping view models to JPA models.
+* `model`: Database entities (`Book`, `Client`, `Employee`, `Order`, `BookItem`).
+* `repo`: Query layers extending `JpaRepository` for custom database searches.
+* `service` & `impl`: Core business logic encapsulation, sorting, and user verification.
 
-#### `service`
+---
 
-- Includes interfaces with declared methods for all services.
+## 🚀 Setup & Execution Guide
 
-- `impl`: Encompasses implementations of declared services.
+You can run the application either inside Docker containers (recommended) or locally on your host machine.
 
-The class diagram of the Domain model is shown in the figure below:
+### Method A: Running via Docker Compose (Recommended)
+This runs the application alongside a dedicated MySQL database container, with zero local database installation required.
 
-<img src="img/Diagram.png" alt="DTO" width="1000"/>
+#### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
 
-### Permissions
+#### Run Steps
+1. Package the project locally to compile the JAR package:
+   ```bash
+   mvn clean package -DskipTests
+   ```
+2. Start the multi-container environment in the background:
+   ```bash
+   docker compose up --build -d
+   ```
+3. Verify that the application is running by tailing the logs:
+   ```bash
+   docker compose logs -f app
+   ```
+   *The app will automatically spin up, wait for the database container to become healthy, seed initial data, and start listening on port `8084`.*
 
-> For Any Registered Users
+---
 
-- Access a list of available books.
-- View detailed information about any book.
-- Edit personal information and view user profile.
+### Method B: Running Locally (Outside Docker)
+Use this option if you want to run the project directly from IntelliJ IDEA or the terminal.
 
-> For Employees
+#### Prerequisites
+* **Java SDK**: Version 17
+* **Database**: Local MySQL server running on port `3306` with a schema named `bookdb`.
 
-- Add, edit, or delete books from the list.
-- Confirm orders placed by customers.
-- Block or unblock customer accounts.
-- Access a list of registered customers.
+#### Run Steps
+1. Create the MySQL database:
+   ```sql
+   CREATE DATABASE bookdb;
+   ```
+2. Define the database password by setting a `DB_PASSWORD` environment variable (e.g., in your shell or IDE Run Configuration):
+   * *Example*: `DB_PASSWORD=your_mysql_password`
+3. Run the application:
+   ```bash
+   mvn spring-boot:run
+   ```
+   *Or right-click `BookStoreServiceSolutionApplication.java` inside IntelliJ IDEA and click **Run**.*
 
-> For Customers
+---
 
-- Add books to the basket for purchase.
-- Delete their account.
-- Submit orders for purchase.
+## 💡 Key Technical Challenges & Solutions
 
-### Services
+### 1. Spring Boot Inactive Config Exception
+* **Challenge**: The application threw `InactiveConfigDataAccessException` upon startup. This was caused by mixing the active profile configuration (`spring.profiles.active=mysql`) and profile-specific configurations inside the same `application.properties` document.
+* **Solution**: Introduced the `#---` multi-document properties separator to isolate the default configurations from the `mysql`-profile-dependent settings, enabling correct Spring Boot profile parsing.
 
-Below is a list of available services with corresponding methods for implementation.
+### 2. Linux MySQL Case Sensitivity
+* **Challenge**: When running inside Linux-based Docker containers, the SQL seed script failed to insert mock data because MySQL on Linux is case-sensitive. The tables generated by Hibernate were lowercase (`employees`, `clients`), but the script queried them in uppercase (`EMPLOYEES`, `CLIENTS`).
+* **Solution**: Standardized all database table queries in [sql.sql](src/main/resources/sql/sql.sql) to use lowercase table names, ensuring seamless compatibility across H2, local Windows environments, and Docker containers.
 
-> Note: You can add your own methods to existing services, as well as create additional services.
+### 3. Port Conflicts on the Host
+* **Challenge**: Port `3306` on the developer machine was already occupied by a local MySQL service, blocking the Docker database container from starting.
+* **Solution**: Mapped the container's MySQL port to host port `3307` (`3307:3306`) in `docker-compose.yml`, while keeping the internal container network on port `3306` to allow Spring Boot to connect seamlessly.
 
-#### OrderService
+---
 
-* `getAllOrdersByClient(email: String)`
-  Retrieves a list of all orders by client's email placed in the system.
-* `getAllOrdersByEmployee(email: String)`
-  Retrieves a list of all orders by employee's email placed in the system.
-* `addOrder(order: OrderDTO)`
-  Adds a new order to the system, incorporating the provided order details.
+## 📈 Quality Assurance & Logging
 
-#### EmployeeService
+The project includes an **AOP (Aspect-Oriented Programming) Logging Aspect** configured in `LoggingAspect.java`. It dynamically monitors execution metrics, tracking method entries, exits, parameter inputs, and execution duration for all controller and service implementations.
 
-* `getAllEmployees()`
-  Retrieves a list of all employees registered in the system.
-* `getEmployeeByEmail(email: String)`
-  Fetches details of a specific employee based on their email.
-* `updateEmployeeByEmail(email: String, employee: EmployeeDTO)`
-  Updates the information of an existing employee identified by their email with the provided details.
-* `deleteEmployeeByEmail(email: String)`
-  Removes an employee from the system based on their email.
-* `addEmployee(employee: EmployeeDTO)`
-  Registers a new employee in the system with the provided details.
-
-#### ClientService
-
-* `getAllClients()`
-  Retrieves a list of all clients (customers) registered in the system.
-* `getClientByEmail(email: String)`
-  Fetches details of a specific client based on their email.
-* `updateClientByEmail(email: String, client: ClientDTO)`
-  Updates the information of an existing client identified by their email with the provided details.
-* `deleteClientByEmail(email: String)`
-  Removes a client from the system based on their email.
-* `addClient(client: ClientDTO)`
-  Registers a new client in the system with the provided details.
-
-#### BookService
-
-* `getAllBooks()`
-  Retrieves a list of all books available in the store.
-* `getBookByName(name: String)`
-  Fetches details of a specific book based on its name.
-* `updateBookByName(name: String, book: BookDTO)`
-  Updates the information of an existing book identified by its name with the provided details.
-* `deleteBookByName(name: String)`
-  Removes a book from the system based on its name.
-* `addBook(book: BookDTO)`
-  Adds a new book to the system with the provided details.
-
-## Requirements
-
-Ensure implementation of the following:
-
-- `Spring Data JPA` for efficient data management.
--  Incorporate `Spring Security` for robust authentication and authorization.
--  Enable `Internationalization and Localization` to support English and any language you choose.
--  Implement `Validation` for data integrity.
--  Establish `Error handling` for graceful error management.
--  Utilize `DTOs` - data transfer objects structured as illustrated below:
-
-<img src="img/DTO.png" alt="DTO" width="600"/>
-
-## Would be nice
-
-Consider the following additional features:
-
-- Incorporate `Logging` for comprehensive system monitoring.
-- Implement `Pagination and Sorting` for enhanced data presentation.
-
-## Recommendations
-
-> Use wrapper classes (like Long, Integer, etc.) instead of primitive types whenever possible.
-
-- Utilize `Lombok` for streamlined Java code.
-- Use `ModelMapper` for easy mapping between objects.
-- Utilize `Thymeleaf` for HTML templating.
-- Explore the `test` folder to execute provided test cases for your solution.
-- Refer to the `main\resources\sql` folder for SQL scripts to initialize data.
-
-## Special message
-
-- Make the most of the time available.
-  While we understand you may not cover all the points,
-  aim to accomplish as much as possible within the given duration of 15 hours.
+To execute tests and verify business rules:
+```bash
+mvn test
+```

@@ -123,7 +123,7 @@ public class OrderServiceImplTest {
         assertNotNull(result);
         verify(clientRepository).save(client);
         verify(orderRepository).save(any(Order.class));
-        assertEquals(BigDecimal.valueOf(150), client.getBalance()); // 200 - 50 = 150
+        assertEquals(BigDecimal.valueOf(150), client.getBalance());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class OrderServiceImplTest {
 
     @Test
     public void testAddOrder_InsufficientBalance() {
-        client.setBalance(BigDecimal.valueOf(10)); // price is 50
+        client.setBalance(BigDecimal.valueOf(10));
         when(clientRepository.findByEmail("client@example.com")).thenReturn(Optional.of(client));
         when(bookRepository.findByName("Test Book")).thenReturn(Optional.of(book));
 

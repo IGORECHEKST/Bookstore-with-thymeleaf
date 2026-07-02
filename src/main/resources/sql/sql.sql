@@ -1,4 +1,4 @@
-INSERT INTO EMPLOYEES (BIRTH_DATE, EMAIL, NAME, PASSWORD, PHONE)
+INSERT INTO employees (BIRTH_DATE, EMAIL, NAME, PASSWORD, PHONE)
 VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', '$2a$10$AfYOsevblqZI7f3XHc7YsuecapX4tqa2PAY.89sRjLCTybkZODegu', '555-123-4567'), -- pass123
        ('1985-09-20', 'jane.smith@email.com', 'Jane Smith', '$2a$10$XVNFtsIweh7lgaeGP/Rvl.CPCYLsowPmWxp5hWEkqMbFzAZ6dW09C', '555-987-6543'), -- abc456
        ('1978-03-08', 'bob.jones@email.com', 'Bob Jones', '$2a$10$ycOlJJ2uXaKWfajHv/N5a.QHtPZRGnCpcsXI60mxwoUsne2NlF1Gi', '555-321-6789'), -- qwerty789
@@ -10,7 +10,7 @@ VALUES ('1990-05-15', 'john.doe@email.com', 'John Doe', '$2a$10$AfYOsevblqZI7f3X
        ('1992-08-22', 'david.wright@email.com', 'David Wright', '$2a$10$YCr4DOSGjz73r3FGjWmky.igq6zXmbhtY3SDt16Yr78hX0UHcscX6', '555-456-7890'), -- access123
        ('1980-04-10', 'emily.harris@email.com', 'Emily Harris', '$2a$10$mLccOT02MDhAzXwIFudESOYlOBB/4IzEviBiJFUZiE0EipPLbPsVa', '555-098-7654'); -- 1234abcd
 
-INSERT INTO CLIENTS (BALANCE, EMAIL, NAME, PASSWORD)
+INSERT INTO clients (BALANCE, EMAIL, NAME, PASSWORD)
 VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', '$2a$10$43XzpvsWUrVZVJtsJM8e1eUdhes6Hlaso.6dv3prgNc54lE2xJo9q'), -- password123
        (1500.50, 'client2@example.com', 'Landon Phillips', '$2a$10$yCQ8JRE5LavOALJRDGUC/uVa07NhYjhpLvQFCdkCLjlK/8RCsiDXi'), -- securepass
        (800.75, 'client3@example.com', 'Harmony Mason', '$2a$10$IOKcYdf6kHJIUu1teEneNOUNOBPxYnkqDaorOsAlPkeQIkzinx/ji'), -- abc123
@@ -22,7 +22,7 @@ VALUES (1000.00, 'client1@example.com', 'Medelyn Wright', '$2a$10$43XzpvsWUrVZVJ
        (1050.90, 'client9@example.com', 'Amina Clarke', '$2a$10$/1YnXvfR47YAxmGzQMW/geazyczqNjCXYyk5JCEWRr/rfbgb2xBBy'), -- qwerty123
        (880.20, 'client10@example.com', 'Bryson Chavez', '$2a$10$w7tpZsA3D39r4pOjdhD51eDm7tPagxhnyLEeC3z6n51f0VGKD.jJG'); -- pass789
 
-INSERT INTO BOOKS (name, genre, age_group, price, publication_year, author, number_of_pages, characteristics, description, language)
+INSERT INTO books (name, genre, age_group, price, publication_year, author, number_of_pages, characteristics, description, language)
 VALUES ('The Hidden Treasure', 'Adventure', 'ADULT', 24.99, '2018-05-15', 'Emily White', 400, 'Mysterious journey', 'An enthralling adventure of discovery', 'ENGLISH'),
        ('Echoes of Eternity', 'Fantasy', 'TEEN', 16.50, '2011-01-15', 'Daniel Black', 350, 'Magical realms', 'A spellbinding tale of magic and destiny', 'ENGLISH'),
        ('Whispers in the Shadows', 'Mystery', 'ADULT', 29.95, '2018-08-11', 'Sophia Green', 450, 'Intriguing suspense', 'A gripping mystery that keeps you guessing', 'ENGLISH'),
